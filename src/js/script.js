@@ -52,7 +52,10 @@
       thisProduct.data = data; // Store the product data
 
       thisProduct.renderInMenu(); // Call the method to render the product in the menu
+      thisProduct.getElements(); // Call the new method to get elements
       thisProduct.initAccordion(); // Initialize the accordion functionality
+      thisProduct.initOrderForm(); // Initialize the order form functionality
+      thisProduct.processOrder(); // Call the processOrder method to set initial price
 
       console.log('new Product:', thisProduct); // Log the new product instance
     }
@@ -73,11 +76,21 @@
       menuContainer.appendChild(thisProduct.element);
     }
 
+    getElements() {
+      const thisProduct = this;
+
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
+      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
+      thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+    }
+
     initAccordion() {
       const thisProduct = this;
 
       // Find the clickable trigger (the product header)
-      const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      const clickableTrigger = thisProduct.accordionTrigger; // Use the reference from getElements
 
       // Add event listener to clickable trigger on event click
       clickableTrigger.addEventListener('click', function(event) {
@@ -95,12 +108,72 @@
           activeProduct.classList.remove(classNames.menuProduct.wrapperActive);
         }
 
-        if (!isActive){
+        if (!isActive) {
           // Toggle active class on thisProduct.element
-        thisProduct.element.classList.add(classNames.menuProduct.wrapperActive);
+          thisProduct.element.classList.add(classNames.menuProduct.wrapperActive);
         }
-        
       });
+    }
+
+    initOrderForm() {
+      const thisProduct = this;
+
+      thisProduct.form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+
+      for (let input of thisProduct.formInputs) {
+        input.addEventListener('change', function() {
+          thisProduct.processOrder();
+        });
+      }
+
+      thisProduct.cartButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+    }
+
+    processOrder() {
+      const thisProduct = this;
+
+      // Convert form to object structure
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      console.log('formData', formData);
+
+      // Set price to default price
+      let price = thisProduct.data.price;
+
+      // For every category (param)...
+      for (let paramId in thisProduct.data.params) {
+        const param = thisProduct.data.params[paramId];
+
+        // For every option in this category
+        for (let optionId in param.options) {
+          const option = param.options[optionId];
+
+          // Check if the option is selected
+          const isSelected = formData[paramId] && formData[paramId].includes(optionId);
+          console.log(`Checking option: ${optionId}, isSelected: ${isSelected}`);
+
+          // If the option is selected and is not default, increase the price
+          if (isSelected && !option.default) {
+            price += option.price;
+            console.log(`Added ${option.price} for option: ${optionId}. New price: ${price}`);
+          }
+
+          // If the option is not selected but is default, decrease the price
+          if (!isSelected && option.default) {
+            price -= option.price;
+            console.log(`Removed ${option.price} for default option: ${optionId}. New price: ${price}`);
+          }
+        }
+      }
+
+      // Update calculated price in the HTML
+      thisProduct.priceElem.innerHTML = price;
+      console.log(`Final price for product ${thisProduct.id}: ${price}`);
     }
   }
 

@@ -4,7 +4,7 @@ dataSource.products = {
   cake: {
     class: 'small',
     name: 'Zio Stefano\'s Doughnut',
-    price: 9,
+    price: 10.5,
     description: 'Treat yourself with this soft, freshly baked cookie. The recipe has been handed down from generation to generation in our family and it has won us several first place prizes in local competitions.',
     images: [
       '<img class="active" src="images/doughnut.svg">',
@@ -13,7 +13,7 @@ dataSource.products = {
   breakfast: {
     class: 'small',
     name: 'Zia Giulia\'s Breakfast',
-    price: 9,
+    price: 11,
     description: 'There\'s no better way to start your day than indulging yourself with a cup of fresh Italian coffee and crispy waffels. Made just for you on the spot, this breakfast combo has been our guests\' favorite for over 50 years.',
     images: [
       '<img class="active" src="images/breakfast.svg">',
@@ -24,9 +24,9 @@ dataSource.products = {
         type: 'radios',
         options: {
           latte: {label: 'Latte', price: 1, default: true},
-          cappuccino: {label: 'Cappuccino', price: 1},
-          espresso: {label: 'Espresso', price: 1},
-          macchiato : {label: 'Macchiato ', price: 1},
+          cappuccino: {label: 'Cappuccino', price: 2.5},
+          espresso: {label: 'Espresso', price: 1.5},
+          macchiato : {label: 'Macchiato ', price: 1.7},
         },
       },
     },
