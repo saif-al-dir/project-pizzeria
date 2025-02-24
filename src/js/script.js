@@ -6,6 +6,7 @@
   const select = {
     templateOf: {
       menuProduct: "#template-menu-product",
+      cartProduct: '#template-cart-product',
     },
     containerOf: {
       menu: '#product-list',
@@ -26,19 +27,44 @@
     },
     widgets: {
       amount: {
-        input: 'input[name="amount"]',
+        input: 'input.amount',
         linkDecrease: 'a[href="#less"]',
         linkIncrease: 'a[href="#more"]',
       },
     },
+    // CODE ADDED START
+      cart: {
+        productList: '.cart__order-summary',
+        toggleTrigger: '.cart__summary',
+        totalNumber: `.cart__total-number`,
+        totalPrice: '.cart__total-price strong, .cart__order-total .cart__order-price-sum strong',
+        subtotalPrice: '.cart__order-subtotal .cart__order-price-sum strong',
+        deliveryFee: '.cart__order-delivery .cart__order-price-sum strong',
+        form: '.cart__order',
+        formSubmit: '.cart__order [type="submit"]',
+        phone: '[name="phone"]',
+        address: '[name="address"]',
+      },
+      cartProduct: {
+        amountWidget: '.widget-amount',
+        price: '.cart__product-price',
+        edit: '[href="#edit"]',
+        remove: '[href="#remove"]',
+      },
+      // CODE ADDED END
   };
 
   const settings = {
     amountWidget: {
       defaultValue: 1, // Default quantity
-      defaultMin: 0,   // Minimum quantity
-      defaultMax: 10,  // Maximum quantity
+      defaultMin: 1,   // Minimum quantity
+      defaultMax: 9,  // Maximum quantity
     },
+    // CODE ADDED START
+      cart: {
+        defaultDeliveryFee: 20,
+      },
+      // CODE ADDED END
   };
 
   const classNames = {
@@ -46,10 +72,18 @@
       wrapperActive: 'active',
       imageVisible: 'active',
     },
+    // CODE ADDED START
+    cart: {
+        wrapperActive: 'active',
+      },
+      // CODE ADDED END
   };
 
   const templates = {
     menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
+    // CODE ADDED START
+    cartProduct: Handlebars.compile(document.querySelector(select.templateOf.cartProduct).innerHTML),
+    // CODE ADDED END
   };
 
   class AmountWidget {
@@ -274,6 +308,33 @@
     }
   }
 
+  class Cart {
+    constructor(element) {
+      const thisCart = this;
+  
+      thisCart.products = []; // Initialize an empty array for products
+      thisCart.getElements(element); // Get DOM elements
+      console.log('new Cart', thisCart); // Log the new Cart instance
+      thisCart.initActions(); // Initialize actions
+    }
+  
+    getElements(element) {
+      const thisCart = this;
+  
+      thisCart.dom = {}; // Create an object to hold DOM elements
+      thisCart.dom.wrapper = element; // Reference to the cart wrapper
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger); // Reference to the toggle trigger
+    }
+  
+    initActions() {
+      const thisCart = this;
+  
+      // Add click event listener to the toggle trigger
+      thisCart.dom.toggleTrigger.addEventListener('click', function() {
+        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive); // Toggle the active class
+      });
+    }
+  } 
 
   const app = {
     initMenu: function() {
@@ -292,11 +353,19 @@
       thisApp.data = dataSource; // Reference to the data source
     },
 
+    initCart: function() {
+      const thisApp = this;
+  
+      const cartElem = document.querySelector(select.containerOf.cart); // Get the cart element
+      thisApp.cart = new Cart(cartElem); // Create a new Cart instance
+    },
+
     init: function() {
       const thisApp = this;
       console.log(' *** App starting **** ');
       thisApp.initData(); // Initialize data
       thisApp.initMenu(); // Initialize menu
+      thisApp.initCart(); // Initialize cart
     },
   };
 
