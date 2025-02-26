@@ -1,5 +1,4 @@
 /* global Handlebars, utils, dataSource */ // eslint-disable-line no-unused-vars
-
 {
   'use strict';
 
@@ -40,6 +39,7 @@
         totalPrice: '.cart__total-price strong, .cart__order-total .cart__order-price-sum strong',
         subtotalPrice: '.cart__order-subtotal .cart__order-price-sum strong',
         deliveryFee: '.cart__order-delivery .cart__order-price-sum strong',
+        toTal: '.cart__order-total .cart__order-price-sum strong', 
         form: '.cart__order',
         formSubmit: '.cart__order [type="submit"]',
         phone: '[name="phone"]',
@@ -141,14 +141,11 @@
   
     announce() {
       const thisWidget = this;
-      const event = new Event('updated'); // Create a custom event
-      thisWidget.element.dispatchEvent(event); // Dispatch the event
-
-      // Notify the Product instance to update the price
-      if (thisWidget.product) {
-        thisWidget.product.processOrder(); 
-      }
-    } 
+      const event = new CustomEvent('updated', {
+        bubbles: true
+      });
+      thisWidget.element.dispatchEvent(event);
+    }
   }
 
   class Product {
@@ -164,8 +161,6 @@
       thisProduct.initOrderForm(); // Initialize the order form functionality
       thisProduct.initAmountWidget(); // Add this line to initialize the amount widget
       thisProduct.processOrder(); // Call the processOrder method to set initial price
-
-      console.log('new Product:', thisProduct); // Log the new product instance
     }
 
     addToCart() {
@@ -304,7 +299,12 @@
       const thisProduct = this;
     
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem); // Create an instance of AmountWidget
-      thisProduct.amountWidget.product = thisProduct; // Pass the Product instance 
+      thisProduct.amountWidget.product = thisProduct; // Pass the Product instance
+      
+        // Add event listener for amount widget update
+      thisProduct.amountWidgetElem.addEventListener('updated', function() {
+      thisProduct.processOrder(); // Call processOrder to update the price
+      });
     }
 
     processOrder() {
@@ -312,7 +312,6 @@
 
       // Convert form to object structure
       const formData = utils.serializeFormToObject(thisProduct.form);
-      console.log('formData', formData);
 
       // Set price to default price
       let price = thisProduct.data.price;
@@ -358,12 +357,13 @@
 
     // Multiply price by the selected amount
     price *= thisProduct.amountWidget.value;
-
+    console.log('this is the line', price);
       // Update calculated price in the HTML
       thisProduct.priceElem.innerHTML = price;
       console.log(`Final price for product ${thisProduct.id}: ${price}`);
     }
   }
+
 
   class Cart {
     constructor(element) {
@@ -371,7 +371,6 @@
   
       thisCart.products = []; // Initialize an empty array for products
       thisCart.getElements(element); // Get DOM elements
-      console.log('new Cart', thisCart); // Log the new Cart instance
       thisCart.initActions(); // Initialize actions
     }
   
@@ -382,24 +381,165 @@
       thisCart.dom.wrapper = element; // Reference to the cart wrapper
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger); // Reference to the toggle trigger
       thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); // Reference to the product list
+      thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(select.cart.totalNumber);
+      thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
+      thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(select.cart.deliveryFee);
+      thisCart.dom.toTal = thisCart.dom.wrapper.querySelector(select.cart.toTal);
+      thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelector(select.cart.totalPrice);
     }
   
     initActions() {
       const thisCart = this;
   
       // Add click event listener to the toggle trigger
-      thisCart.dom.toggleTrigger.addEventListener('click', function() {
+        thisCart.dom.toggleTrigger.addEventListener('click', function() {
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive); // Toggle the active class
       });
+      thisCart.dom.productList.addEventListener('updated', function() {
+        thisCart.update();
+      });
+      // Add event listener for the remove event
+      thisCart.dom.productList.addEventListener('remove', function(event) {
+        thisCart.remove(event.detail.cartProduct); // Call the remove method with the cart product
+    });
     }
+
     add(menuProduct) {
+      const thisCart = this;
+
       console.log('adding product', menuProduct);
       // Generate HTML for the cart product
       const generatedHTML = templates.cartProduct(menuProduct);
       const generatedDOM = utils.createDOMFromHTML(generatedHTML);
       this.dom.productList.appendChild(generatedDOM); // Add the product to the cart
+      
+      // Create a new CartProduct instance and add it to the products array
+      const cartProduct = new CartProduct(menuProduct, generatedDOM);
+      thisCart.products.push(cartProduct); // Add the CartProduct instance to the products array
+
+
+      // Update cart totals
+      this.update();
+    }
+
+    remove(cartProduct) {
+      const thisCart = this;
+  
+      // Find the index of the product to remove
+      const index = thisCart.products.indexOf(cartProduct);
+      if (index !== -1) {
+        // Remove the product from the DOM
+        cartProduct.dom.wrapper.remove();
+        // Remove the product from the products array
+        thisCart.products.splice(index, 1);
+        // Update the cart totals
+        thisCart.update();
+      }
+    }
+
+    update(){
+      const thisCart = this;
+
+      const deliveryFee = settings.cart.defaultDeliveryFee;
+      let totalNumber = 0;
+      let subtotalPrice = 0;
+
+      for (let product of thisCart.products) {
+        totalNumber += product.amount;
+        subtotalPrice += product.price;
+      }
+    
+      thisCart.totalPrice = subtotalPrice + (totalNumber > 0 ? deliveryFee : 0);
+    
+      // Update the HTML
+      thisCart.dom.totalNumber.innerHTML = totalNumber;
+      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
+      thisCart.dom.deliveryFee.innerHTML = totalNumber > 0 ? deliveryFee : 0;
+      thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
+      thisCart.dom.toTal.innerHTML = thisCart.dom.totalPrice.innerHTML;
+
+      
     }
   } 
+
+  class CartProduct {
+    constructor (menuProduct, element) {
+      const thisCartProduct = this;
+      
+    // Save product summary properties
+    thisCartProduct.id = menuProduct.id;
+    thisCartProduct.name = menuProduct.name;
+    thisCartProduct.amount = menuProduct.amount;
+    thisCartProduct.priceSingle = menuProduct.priceSingle;
+    thisCartProduct.price = thisCartProduct.priceSingle * thisCartProduct.amount; // Calculate initial price
+    thisCartProduct.params = menuProduct.params;
+
+          // Get DOM elements
+        thisCartProduct.getElements(element);
+
+        // Initialize amount widget
+        thisCartProduct.initAmountWidget();
+
+        // Initialize actions
+        thisCartProduct.initActions();
+
+        console.log('new CartProduct:', thisCartProduct);
+    }
+
+    getElements(element) {
+      const thisCartProduct = this;
+  
+      thisCartProduct.dom = {};
+      thisCartProduct.dom.wrapper = element;
+      thisCartProduct.dom.amountWidget = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.amountWidget);
+      thisCartProduct.dom.price = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.price);
+      thisCartProduct.dom.edit = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.edit);
+      thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.remove);
+    }
+
+    initAmountWidget() {
+      const thisCartProduct = this;
+  
+      thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.dom.amountWidget);
+      thisCartProduct.amountWidget.product = thisCartProduct;
+  
+      // Add event listener for amount widget update
+        thisCartProduct.dom.amountWidget.addEventListener('updated', function() {
+        thisCartProduct.amount = thisCartProduct.amountWidget.value;
+        thisCartProduct.price = thisCartProduct.priceSingle * thisCartProduct.amount;
+        thisCartProduct.dom.price.innerHTML = thisCartProduct.price; // Update price in HTML
+      });
+    }
+
+    initActions() {
+      const thisCartProduct = this;
+  
+      // Add event listener for the remove button
+      thisCartProduct.dom.remove.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default action
+        thisCartProduct.remove(); // Call the remove method
+      });
+  
+      // Add event listener for the edit button (currently does nothing)
+      thisCartProduct.dom.edit.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default action
+        // Future edit functionality can be added here
+      });
+    }
+
+    remove() {
+      const thisCartProduct = this;
+
+      const event = new CustomEvent('remove', {
+        bubbles: true,
+        detail: {
+          cartProduct: thisCartProduct,
+        },
+      });
+
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+    }
+  }
 
   const app = {
     initMenu: function() {
