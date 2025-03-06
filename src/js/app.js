@@ -32,7 +32,7 @@ const app = {
         // Wywołaj metodę initMenu
         thisApp.initMenu();
 
-        console.log('thisApp.data', JSON.stringify(thisApp.data));
+        // console.log('thisApp.data', JSON.stringify(thisApp.data));
       });
   },
 

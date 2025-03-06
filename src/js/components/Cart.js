@@ -1,5 +1,6 @@
-import { settings, select, classNames, templates } from "./settings.js";
-import utils from "./utils.js";
+import { settings, select, classNames, templates } from "../settings.js";
+import utils from "../utils.js";
+import CartProduct from "./CartProduct.js";
 
 class Cart {
     constructor(element) {
@@ -128,7 +129,7 @@ class Cart {
         this.dom.productList.appendChild(generatedDOM); // Add the product to the cart
 
         // Create a new CartProduct instance and add it to the products array
-        const cartProduct = new cartProduct(menuProduct, generatedDOM);
+        const cartProduct = new CartProduct(menuProduct, generatedDOM);
         thisCart.products.push(cartProduct); // Add the CartProduct instance to the products array
         // Update cart totals
         this.update();
