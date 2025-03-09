@@ -209,10 +209,12 @@ class Product {
     addToCart() {
         const thisProduct = this;
         // app.cart.add(thisProduct.prepareCartProduct()); // Pass the prepared product summary to the cart
+
+        const productSummary = thisProduct.prepareCartProduct();
         const event = new CustomEvent('add-to-cart', {
             bubbles: true,
             detail: {
-                product: thisProduct,
+                product: productSummary,
 
             }
         });

@@ -1,5 +1,10 @@
 .header {
-  padding: ($base-size * 5) 0 ($base-size * 8) 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: ($base-size * 2) 0 ($base-size * 8) 0;
   background: $color-dark;
   color: $color-light;
 

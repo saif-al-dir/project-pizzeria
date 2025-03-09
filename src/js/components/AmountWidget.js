@@ -25,7 +25,7 @@ class AmountWidget {
         const newValue = parseInt(value); // Convert the input value to an integer
 
         // Validate the new value
-        if (newValue !== thisWidget.value && !isNaN(newValue) && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
+        if (newValue != thisWidget.value && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
             thisWidget.value = newValue; // Update the value
             thisWidget.input.value = thisWidget.value; // Update the input field
             thisWidget.announce(); // Notify that the value has changed
