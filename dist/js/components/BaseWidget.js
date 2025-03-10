@@ -1,3 +1,4 @@
+
 class BaseWidget {
     constructor(wrapperElement, initialValue) {
         const thisWidget = this;
@@ -21,12 +22,14 @@ class BaseWidget {
         // Validate the new value
         if (newValue != thisWidget.correctValue && thisWidget.isValid(newValue)) {
             thisWidget.correctValue = newValue; // Update the value
-            thisWidget.renderValue(); // Update the input field
+            // thisWidget.renderValue(); // Update the input field
             thisWidget.announce(); // Notify that the value has changed
         }
-        else {
-            thisWidget.renderValue(); // Restore the previous value if invalid
-        }
+
+        thisWidget.renderValue(); // Update the input field
+        // else {
+        //     thisWidget.renderValue(); // Restore the previous value if invalid
+        // }
     }
 
     setValue(value) {
@@ -34,6 +37,21 @@ class BaseWidget {
 
         thisWidget.value = value;
     }
+
+    // setValue(value) {
+    //     const thisWidget = this;
+    //     const newValue = parseInt(value); // Convert the input value to an integer
+
+    //     // Validate the new value
+    //     if (newValue != thisWidget.value && thisWidget.isValid(newValue)) {
+    //         thisWidget.value = newValue; // Update the value
+    //         thisWidget.dom.input.value = thisWidget.value; // Update the input field
+    //         thisWidget.announce(); // Notify that the value has changed
+    //     } else {
+    //         thisWidget.dom.input.value = thisWidget.value; // Restore the previous value if invalid
+    //     }
+    //     thisWidget.renderValue();
+    // }
 
     parseValue(value) {
         return parseInt(value);

@@ -1,65 +1,65 @@
 import { settings, select } from "../settings.js";
+import BaseWidget from "./BaseWidget.js";
 
-class AmountWidget {
+class AmountWidget extends BaseWidget {
     constructor(element) {
+        super(element, settings.amountWidget.defaultValue);
         const thisWidget = this;
-
-        thisWidget.element = element; // Store the reference to the widget element
+        console.log('This Widget:', thisWidget);
         thisWidget.getElements(); // Get references to the input and buttons
-        thisWidget.value = settings.amountWidget.defaultValue; // Set the default value
-        thisWidget.setValue(thisWidget.input.value); // Initialize the value based on the input
         thisWidget.initActions(); // Set up event listeners
+
+        console.log('AmountWidget:', thisWidget);
     }
 
     getElements() {
         const thisWidget = this;
 
         // Get references to the input and buttons
-        thisWidget.input = thisWidget.element.querySelector(select.widgets.amount.input);
-        thisWidget.linkDecrease = thisWidget.element.querySelector(select.widgets.amount.linkDecrease);
-        thisWidget.linkIncrease = thisWidget.element.querySelector(select.widgets.amount.linkIncrease);
+
+        thisWidget.dom.input = thisWidget.dom.wrapper.querySelector(select.widgets.amount.input);
+        thisWidget.dom.linkDecrease = thisWidget.dom.wrapper.querySelector(select.widgets.amount.linkDecrease);
+        thisWidget.dom.linkIncrease = thisWidget.dom.wrapper.querySelector(select.widgets.amount.linkIncrease);
+
+
+        console.log('Input:', this.dom.input);
+        console.log('Link Decrease:', this.dom.linkDecrease);
+        console.log('Link Increase:', this.dom.linkIncrease);
     }
 
-    setValue(value) {
+    isValid(value) {
+        return !isNaN(value)
+            && value >= settings.amountWidget.defaultMin
+            && value <= settings.amountWidget.defaultMax;
+    }
+
+    renderValue() {
         const thisWidget = this;
-        const newValue = parseInt(value); // Convert the input value to an integer
 
-        // Validate the new value
-        if (newValue != thisWidget.value && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
-            thisWidget.value = newValue; // Update the value
-            thisWidget.input.value = thisWidget.value; // Update the input field
-            thisWidget.announce(); // Notify that the value has changed
-        } else {
-            thisWidget.input.value = thisWidget.value; // Restore the previous value if invalid
-        }
+        thisWidget.dom.input.value = thisWidget.value;
     }
+
 
     initActions() {
         const thisWidget = this;
 
         // Set up event listeners for input and buttons
-        thisWidget.input.addEventListener('change', function () {
-            thisWidget.setValue(thisWidget.input.value);
+        thisWidget.dom.input.addEventListener('change', function () {
+            // thisWidget.setValue(thisWidget.dom.input.value);
+            thisWidget.value = thisWidget.dom.input.value;
         });
 
-        thisWidget.linkDecrease.addEventListener('click', function (event) {
+        thisWidget.dom.linkDecrease.addEventListener('click', function (event) {
             event.preventDefault(); // Prevent default action
             thisWidget.setValue(thisWidget.value - 1); // Decrease the value
         });
 
-        thisWidget.linkIncrease.addEventListener('click', function (event) {
+        thisWidget.dom.linkIncrease.addEventListener('click', function (event) {
             event.preventDefault(); // Prevent default action
             thisWidget.setValue(thisWidget.value + 1); // Increase the value
         });
     }
 
-    announce() {
-        const thisWidget = this;
-        const event = new CustomEvent('updated', {
-            bubbles: true
-        });
-        thisWidget.element.dispatchEvent(event);
-    }
 }
 
 export default AmountWidget;
