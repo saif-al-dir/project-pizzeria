@@ -5,11 +5,14 @@ class AmountWidget extends BaseWidget {
     constructor(element) {
         super(element, settings.amountWidget.defaultValue);
         const thisWidget = this;
-        console.log('This Widget:', thisWidget);
+        // console.log('This Widget:', thisWidget);
+
+        // Ensure the wrapper is properly initialized
+        thisWidget.dom.wrapper = element;
         thisWidget.getElements(); // Get references to the input and buttons
         thisWidget.initActions(); // Set up event listeners
 
-        console.log('AmountWidget:', thisWidget);
+        // console.log('AmountWidget:', thisWidget);
     }
 
     getElements() {
@@ -22,9 +25,9 @@ class AmountWidget extends BaseWidget {
         thisWidget.dom.linkIncrease = thisWidget.dom.wrapper.querySelector(select.widgets.amount.linkIncrease);
 
 
-        console.log('Input:', this.dom.input);
-        console.log('Link Decrease:', this.dom.linkDecrease);
-        console.log('Link Increase:', this.dom.linkIncrease);
+        // console.log('Input:', this.dom.input);
+        // console.log('Link Decrease:', this.dom.linkDecrease);
+        // console.log('Link Increase:', this.dom.linkIncrease);
     }
 
     isValid(value) {
@@ -39,25 +42,26 @@ class AmountWidget extends BaseWidget {
         thisWidget.dom.input.value = thisWidget.value;
     }
 
-
     initActions() {
         const thisWidget = this;
 
-        // Set up event listeners for input and buttons
-        thisWidget.dom.input.addEventListener('change', function () {
-            // thisWidget.setValue(thisWidget.dom.input.value);
-            thisWidget.value = thisWidget.dom.input.value;
-        });
+        if (thisWidget.dom.input && thisWidget.dom.linkDecrease && thisWidget.dom.linkIncrease) {
+            thisWidget.dom.input.addEventListener('change', function () {
+                thisWidget.value = thisWidget.dom.input.value; // This should call setValue
+            });
 
-        thisWidget.dom.linkDecrease.addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent default action
-            thisWidget.setValue(thisWidget.value - 1); // Decrease the value
-        });
+            thisWidget.dom.linkDecrease.addEventListener('click', function (event) {
+                event.preventDefault();
+                thisWidget.setValue(thisWidget.value - 1);
+            });
 
-        thisWidget.dom.linkIncrease.addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent default action
-            thisWidget.setValue(thisWidget.value + 1); // Increase the value
-        });
+            thisWidget.dom.linkIncrease.addEventListener('click', function (event) {
+                event.preventDefault();
+                thisWidget.setValue(thisWidget.value + 1);
+            });
+        } else {
+            // console.warn('One or more DOM elements are missing.');
+        }
     }
 
 }
