@@ -101,7 +101,14 @@ const app = {
 
   initBooking() {
     const bookingContainer = document.querySelector(select.containerOf.booking); // Znalezienie kontenera
-    new Booking(bookingContainer); // Utworzenie nowej instancji Booking
+    // new Booking(bookingContainer); // Utworzenie nowej instancji Booking
+
+    // to check the existance of bookingContainer
+    if (bookingContainer) {
+      new Booking(bookingContainer);
+    } else {
+      console.error('Booking container not found');
+    }
   },
 
   init: function () {
@@ -115,4 +122,8 @@ const app = {
 };
 
 // Start the application
-app.init();
+// Ensure that the DOM is ready
+
+document.addEventListener('DOMContentLoaded', function () {
+  app.init();
+});

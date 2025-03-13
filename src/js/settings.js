@@ -43,6 +43,8 @@ export const select = {
         peopleAmount: '.people-amount input.amount',
         hoursAmount: '.hours-amount input.amount',
         tables: '.floor-plan .table',
+        startersCheckboxes: 'checkbox',
+        submitButton: '.order-confirmation button',
     },
     nav: {
         links: '.main-nav a',
@@ -111,6 +113,7 @@ export const classNames = {
         wrapperActive: 'active',
     },
     booking: {
+        // table: '',
         loading: 'loading',
         tableBooked: 'booked',
     },
