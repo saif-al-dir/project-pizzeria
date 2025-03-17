@@ -49,7 +49,7 @@ export const select = {
         submitButton: '.order-confirmation button',
     },
     nav: {
-        links: '.main-nav a',
+        links: '.main-nav a, .top-buttons a',
     },
     cart: {
         productList: '.cart__order-summary',

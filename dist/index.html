@@ -9,7 +9,7 @@
   <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="vendor/range-slider.min.css">
-  <link rel="stylesheet" href="vendor/flickity.css" media="screen">
+  <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -251,14 +251,16 @@
     <div class="container">
       <!-- Top Buttons -->
       <div class="top-buttons">
-          <div class="button">
-              <img src="images/assets/pizza-1.jpg" alt="Order online image" class="button-img">
-              <div class="overlay">
-                  <span class="text">ORDER ONLINE</span>
-                  <span class="extra-text">Delicious food delivered to your door</span>
+            <a href="#order" class="button-link" id="order-link">
+              <div class="button">
+                  <img src="images/assets/pizza-1.jpg" alt="Order online image" class="button-img">
+                  <div class="overlay">
+                      <span class="text">ORDER ONLINE</span>
+                      <span class="extra-text">Delicious food delivered to your door</span>
+                  </div>
               </div>
-          </div>
-            <a href="#" class="button-link" id="booking-link">
+            </a>
+            <a href="#booking" class="button-link" id="booking-link">
               <div class="button">
                 <img src="images/assets/pizza-2.jpg" alt="Book a table image" class="button-img">
                 <div class="overlay">
@@ -273,33 +275,34 @@
           <p>TUE-SUN, 12PM - 12AM</p>
       </div>
 
-      <!-- Testimonial -->
-      <div class="testimonial">
-        <img src="images/assets/pizza-3.jpg" alt="Customer enjoying meal" class="testimonial-img">
-        <div>
-            <h3>AMAZING SERVICE!</h3>
-            <p>Lorem jdoyt iwer utiro oeeiw, consectetur adipiscing elit. Aliquam egestas viverra tortor, eu ullamcorper dui imperdiet nec. Nunc sed dolor at elit lobortis sodales.</p>
-            <p>- Peter Karasko</p>
-        </div>
-      </div>
-      <!-- Dots -->
-      <div class="dots">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
       <!-- Flickity HTML init -->
 
-      <!-- <div class="carousel" data-flickity='{ "autoPlay": true }'>
+      <div class="main-carousel">
         <div class="carousel-cell">
-          <img src="images/assets/pizza-1.jpg" alt="Customer enjoying meal" class="testimonial-img">
+          <img src="images/assets/pizza-3.jpg" alt="Customer enjoying meal">
           <div>
               <h3>AMAZING SERVICE!</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam egestas viverra tortor, eu ullamcorper dui imperdiet nec. Nunc sed dolor at elit lobortis sodales.</p>
               <p>- Peter Karaso</p>
           </div>
         </div>
-      </div> -->
+        <div class="carousel-cell">
+          <img src="images/assets/pizza-3.jpg" alt="Customer enjoying meal">
+          <div>
+              <h3>AMAZING SERVICE!</h3>
+              <p>Lorem ipsum solart this amet, fork for ehammr elit. Aliquam egestas viverra tortor, eu ullamcorper dui imperdiet nec. Nunc sed dolor at elit lobortis sodales.</p>
+              <p>- Mark Duner</p>
+          </div>
+        </div>
+        <div class="carousel-cell">
+          <img src="images/assets/pizza-3.jpg" alt="Customer enjoying meal">
+          <div>
+              <h3>AMAZING SERVICE!</h3>
+              <p>Lorem ipsum solart this amet, fork for ehammr elit. Aliquam egestas viverra tortor, eu ullamcorper dui imperdiet nec. Nunc sed dolor at elit lobortis sodales.</p>
+              <p>- Mark Duner</p>
+          </div>
+        </div>
+      </div>
         
       <!-- Gallery -->
       <div class="gallery">
@@ -333,13 +336,13 @@
       <div class="instagram-link">
           <a href="#">View more on Instagram</a>
       </div>
-  </script>
+    </script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="vendor/range-slider.min.js"></script>
-  <script src="vendor/flickity.pkgd.min.js"></script>
-  <script src="js/app.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="vendor/range-slider.min.js"></script>
+    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+    <script src="js/app.js" type="module"></script>
 
   </body>
 </html>

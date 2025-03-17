@@ -1,6 +1,5 @@
 import { templates } from '../settings.js'; // Adjust the path as necessary
 
-
 class Home {
     constructor(element) {
         const thisHome = this;
@@ -13,15 +12,9 @@ class Home {
 
         thisHome.render();
 
-        // Function to navigate to the booking page
-        function navigateToBooking() {
-            window.location.href = 'http://localhost:3000/#/booking'; // Set the URL to the booking page
-        }
-
         // Add event listener to the button link
         document.getElementById('booking-link').addEventListener('click', function (event) {
             event.preventDefault(); // Prevent the default anchor behavior
-            navigateToBooking(); // Call the function to navigate
         });
 
         document.querySelectorAll('.gallery-item').forEach(item => {
@@ -33,6 +26,20 @@ class Home {
                 image.classList.toggle('liked');
                 heart.style.color = image.classList.contains('liked') ? 'red' : 'transparent';
             });
+        });
+
+        // setTimeout(() => {
+        //     const elem = document.querySelector('.main-carousel');
+        //     console.log(elem);
+        // }, 1000);
+
+
+        const elem = document.querySelector('.main-carousel');
+        // eslint-disable-next-line no-undef
+        new Flickity(elem, {
+            // options
+            cellAlign: 'left',
+            contain: true
         });
 
     }

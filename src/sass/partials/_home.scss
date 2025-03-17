@@ -99,56 +99,55 @@
     font-size: 1rem;
 }
 
-/* Testimonial */
-.testimonial {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Carousel Flickity */
+
+.main-carousel {
+    box-sizing: border-box;
+    // display: flex;
+    // flex-direction: column;
+    // align-items: center;
     margin-bottom: 40px;
+    background: #EEE;
 }
 
-@media (min-width: 640px) {
-    .testimonial {
-        flex-direction: row;
-        align-items: flex-start;
-    }
+// @media (min-width: 640px) {
+//     .main-carousel {
+//         flex-direction: row;
+//         align-items: flex-start;
+//     }
+// }
+
+.carousel-cell {
+    width: 100%;
+    height: 225px;
+    border-radius: 5px;
+    background: rgb(214, 218, 214);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 40px 0px;
 }
 
-.testimonial-img {
+.carousel-cell img {
     width: 128px;
-    height: 175px;
-    margin-bottom: 8px;
+    height: 200px;
+    margin: 8px;
 }
 
-.testimonial h3 {
+.carousel-cell h3 {
     font-size: 1.125rem;
     font-weight: bold;
     margin: 8px;
 }
 
-.testimonial p {
+.carousel-cell p {
     padding: auto;
-    color: #4a5568; /* dark gray */
+    color: #4e535b; /* dark gray */
     margin: 8px;
 }
 
-.testimonial p:last-child {
+.carousel-cell p:last-child {
     color: #718096; /* lighter gray */
-}
-
-/* Dots */
-.dots {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 40px;
-}
-
-.dot {
-    width: 12px;
-    height: 12px;
-    background-color: #e2e8f0; /* gray */
-    border-radius: 50%;
-    margin: 0 4px;
 }
 
 /* Gallery */

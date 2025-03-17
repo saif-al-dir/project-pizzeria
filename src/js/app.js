@@ -122,9 +122,9 @@ const app = {
     // console.log(' *** App starting **** ');
     thisApp.initData(); // Initialize data
     thisApp.initCart(); // Initialize cart
-    thisApp.initPages(); // Initialize booking
-    thisApp.initBooking();
     thisApp.initHome();
+    thisApp.initBooking();
+    thisApp.initPages(); // Initialize booking
   },
 };
 
