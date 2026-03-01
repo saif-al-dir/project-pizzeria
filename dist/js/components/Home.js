@@ -39,7 +39,8 @@ class Home {
         new Flickity(elem, {
             // options
             cellAlign: 'left',
-            contain: true
+            contain: true,
+            imagesLoaded: true
         });
 
     }

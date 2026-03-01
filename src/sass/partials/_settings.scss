@@ -40,13 +40,11 @@ $base-size: 12px;
     background: lighten($btn-bg, 3%);
   }
 
-  // CODE ADDED START
   &.disabled, &[disabled] {
     background: desaturate($btn-bg, 100%);
     border-color: desaturate($btn-border, 100%);
     cursor: not-allowed;
   }
-  // CODE ADDED END
 }
 
 @mixin flex($flex-direction, $align-items, $justify-content) {
@@ -75,40 +73,4 @@ $base-size: 12px;
   transform: translate(0, 0);
   max-height: 1000px;
   opacity: 1;
-}
-
-/* Helpers */
-
-.no-spacing {
-  margin: 0;
-  padding: 0;
-}
-
-@keyframes flipdown {
-  0% {
-    opacity: 0;
-    transform-origin: top center;
-    transform: rotateX(-90deg);
-  }
-
-  5% {
-    opacity: 1;
-  }
-
-  80% {
-    transform: rotateX(8deg);
-  }
-
-  83% {
-    transform: rotateX(6deg);
-  }
-
-  92% {
-    transform: rotateX(-3deg);
-  }
-
-  100% {
-    transform-origin: top center;
-    transform: rotateX(0deg);
-  }
 }

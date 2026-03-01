@@ -63,9 +63,11 @@ class BaseWidget {
 
     renderValue() {
         const thisWidget = this;
-
-        thisWidget.dom.wrapper.innerHTML = thisWidget.value;
+        if (thisWidget.dom.input) {
+            thisWidget.dom.input.value = thisWidget.value;
+        }
     }
+
 
     announce() {
         const thisWidget = this;
