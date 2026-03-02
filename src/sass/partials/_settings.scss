@@ -1,3 +1,4 @@
+@use "sass:color";
 /* Variables */
 
 $color-dark: #333;
@@ -37,12 +38,12 @@ $base-size: 12px;
   text-align: center;
 
   &:hover {
-    background: lighten($btn-bg, 3%);
+    background: color.adjust($btn-bg, $lightness: 3%);
   }
 
   &.disabled, &[disabled] {
-    background: desaturate($btn-bg, 100%);
-    border-color: desaturate($btn-border, 100%);
+    background: color.adjust($btn-bg, $saturation: -100%);
+    border-color: color.adjust($btn-border, $saturation: -100%);
     cursor: not-allowed;
   }
 }

@@ -1,5 +1,3 @@
-/* global Handlebars, dataSource */
-
 const utils = {}; // eslint-disable-line no-unused-vars
 
 utils.createDOMFromHTML = function (htmlString) {
@@ -8,8 +6,9 @@ utils.createDOMFromHTML = function (htmlString) {
   return div.firstChild;
 };
 
+// FIXED: Use Object.prototype.hasOwnProperty.call() instead
 utils.createPropIfUndefined = function (obj, key, value = []) {
-  if (!obj.hasOwnProperty(key)) {
+  if (!Object.prototype.hasOwnProperty.call(obj, key)) {
     obj[key] = value;
   }
 };
@@ -36,14 +35,17 @@ utils.serializeFormToObject = function (form) {
   return output;
 };
 
+// FIXED: Comment out or remove this function if not used
+/*
 utils.convertDataSourceToDbJson = function () {
   const productJson = [];
-  for (let key in dataSource.products) {
+  // This function references undefined variables - either remove or properly implement
+  for (let key in products) {
     productJson.push(Object.assign({ id: key }, dataSource.products[key]));
   }
-
   console.log(JSON.stringify({ product: productJson, order: [] }, null, '  '));
 };
+*/
 
 Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
   return (arg1 == arg2) ? options.fn(this) : options.inverse(this);

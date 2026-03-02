@@ -1,8 +1,21 @@
-import { settings, select, classNames } from "./settings.js";
+/* global supabase */
+
+import { supabaseConfig } from './config.js';
+
+const { createClient } = supabase;
+
+const supabaseUrl = supabaseConfig.url;
+const supabaseAnonKey = supabaseConfig.anonKey;
+
+window.supabase = createClient(supabaseUrl, supabaseAnonKey);
+console.log('Supabase client initialized from CDN');
+
+import { select, classNames } from "./settings.js";
 import Product from "./components/Product.js";
 import Cart from "./components/Cart.js";
 import Booking from "./components/Booking.js";
 import Home from "./components/Home.js";
+
 
 const app = {
   initPages() {
@@ -39,6 +52,7 @@ const app = {
       });
     }
   },
+  
   // Add active class to matching pages or remove it
   activatePage: function (pageId) {
     const thisApp = this;
@@ -55,7 +69,6 @@ const app = {
     }
   },
 
-
   initMenu: function () {
     const thisApp = this;
 
@@ -65,26 +78,31 @@ const app = {
     }
   },
 
-  initData: function () {
+  // FIXED: Changed from async function to method with async keyword
+  initData: async function() {
     const thisApp = this;
-    thisApp.data = {}; // Zastąpienie dataSource pustym obiektem
-
-    const url = settings.db.url + '/' + settings.db.products; // Adres endpointu
-
-    fetch(url)
-      .then(function (rawResponse) {
-        return rawResponse.json(); // Konwersja odpowiedzi na JSON
-      })
-      .then(function (parsedResponse) {
-
-        // Zapisz parsedResponse jako thisApp.data.products
-        thisApp.data.products = parsedResponse;
-
-        // Wywołaj metodę initMenu
-        thisApp.initMenu();
-
-        // console.log('thisApp.data', JSON.stringify(thisApp.data));
+    
+    try {
+      // Fetch products from Supabase
+      const { data: products, error } = await window.supabase
+        .from('products')
+        .select('*');
+      
+      if (error) throw error;
+      
+      // Transform data to match your app's expected format
+      thisApp.data = {
+        products: {}
+      };
+      
+      products.forEach(product => {
+        thisApp.data.products[product.id] = product;
       });
+      
+      thisApp.initMenu();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   },
 
   initCart: function () {
@@ -101,10 +119,8 @@ const app = {
   },
 
   initBooking() {
-    const bookingContainer = document.querySelector(select.containerOf.booking); // Znalezienie kontenera
-    // new Booking(bookingContainer); // Utworzenie nowej instancji Booking
-
-    // to check the existance of bookingContainer
+    const bookingContainer = document.querySelector(select.containerOf.booking);
+    
     if (bookingContainer) {
       new Booking(bookingContainer);
     } else {
@@ -119,18 +135,15 @@ const app = {
 
   init: function () {
     const thisApp = this;
-    // console.log(' *** App starting **** ');
     thisApp.initData(); // Initialize data
     thisApp.initCart(); // Initialize cart
     thisApp.initHome();
     thisApp.initBooking();
-    thisApp.initPages(); // Initialize booking
+    thisApp.initPages(); // Initialize pages
   },
 };
 
 // Start the application
-// Ensure that the DOM is ready
-
 document.addEventListener('DOMContentLoaded', function () {
   app.init();
 });

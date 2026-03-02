@@ -1,18 +1,35 @@
-.h1 {
-  font-family: $font-header;
+@use "settings";
+
+%h1-styles {
+  font-family: settings.$font-header;
   font-size: 26px;
-  font-weight: $font-semibold;
+  font-weight: settings.$font-semibold;
+  text-transform: uppercase;
+}
+
+.h1 {
+  @extend %h1-styles;
+}
+
+%h2-styles {
+  font-size: 14px;
+  font-weight: settings.$font-bold;
   text-transform: uppercase;
 }
 
 .h2 {
-  font-size: 14px;
-  font-weight: $font-bold;
-  text-transform: uppercase;
+  @extend %h2-styles;
 }
 
+// 1. Create the placeholder and move styles here
+%h3-styles {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+// 2. Make the original .h3 class extend the placeholder
 .h3 {
-  font-size: 12px;
-  font-weight: $font-bold;
-  text-transform: uppercase;
+  @extend %h3-styles;
 }

@@ -1,13 +1,17 @@
+@use "sass:color";
+@use "settings";
+@use 'typography' as typography; 
+
 .footer {
-  background: $color-dark;
-  color: $color-light;
-  padding: ($base-size * 4) 0;
-  margin-top: ($base-size * 6);
+  background: settings.$color-dark;
+  color: settings.$color-light;
+  padding: (settings.$base-size * 4) 0;
+  margin-top: (settings.$base-size * 6);
   font-size: 14px;
 
   &__content {
     display: grid;
-    gap: ($base-size * 4);
+    gap: (settings.$base-size * 4);
 
     @media (min-width: 640px) {
       grid-template-columns: repeat(3, 1fr);
@@ -16,9 +20,9 @@
 
   &__section {
     h4 {
-      @extend .h3;
-      color: $color-main;
-      margin-bottom: ($base-size * 2);
+      @extend %h3-styles;
+      color: settings.$color-main;
+      margin-bottom: (settings.$base-size * 2);
       position: relative;
     }
     
@@ -30,7 +34,7 @@
       left: 0;
       width: 40px;
       height: 2px;
-      background: $color-main;
+      background: settings.$color-main;
     }
 
     ul {
@@ -41,40 +45,40 @@
     
     // Extract the li styling to a separate rule
     .footer__section ul li {
-      margin-bottom: ($base-size, 2);
+      margin-bottom: (settings.$base-size, 2);
     }
     
     .footer__section ul li a {
-      color: lighten($color-dark, 50%);
+      color: color.adjust(settings.$color-dark, $lightness: 50%);
       text-decoration: none;
-      transition: $transition;
+      transition: settings.$transition;
 
       &:hover {
-        color: $color-main;
+        color: settings.$color-main;
         padding-left: 5px;
       }
     }
 
     p {
-      color: lighten($color-dark, 50%);
+      color: color.adjust(settings.$color-dark, $lightness: 50%);
       line-height: 1.6;
-      margin-bottom: ($base-size, 2);
+      margin-bottom: (settings.$base-size, 2);
     }
   }
 
   // Rest of the code remains the same...
   &__social {
     display: flex;
-    gap: ($base-size * 1.5);
-    margin-top: ($base-size * 2);
+    gap: (settings.$base-size * 1.5);
+    margin-top: (settings.$base-size * 2);
 
     a {
-      color: $color-light;
+      color: settings.$color-light;
       font-size: 20px;
-      transition: $transition;
+      transition: settings.$transition;
 
       &:hover {
-        color: $color-main;
+        color: settings.$color-main;
         transform: translateY(-3px);
       }
     }
@@ -82,17 +86,17 @@
 
   &__bottom {
     text-align: center;
-    margin-top: ($base-size * 4);
-    padding-top: ($base-size * 2);
-    border-top: 1px solid lighten($color-dark, 10%);
-    color: lighten($color-dark, 40%);
+    margin-top: (settings.$base-size * 4);
+    padding-top: (settings.$base-size * 2);
+    border-top: 1px solid color.adjust(settings.$color-dark, $lightness: 10%);
+    color: color.adjust(settings.$color-dark, $lightness: 40%);
     font-size: 12px;
   }
 
   &__hours {
     p {
       span:first-child {
-        color: $color-light;
+        color: settings.$color-light;
       }
     }
   }
@@ -100,33 +104,33 @@
   &__newsletter {
     input {
       width: 100%;
-      padding: $base-size;
-      margin-bottom: $base-size;
-      background: lighten($color-dark, 10%);
-      border: 1px solid lighten($color-dark, 20%);
-      color: $color-light;
+      padding: settings.$base-size;
+      margin-bottom: settings.$base-size;
+      background: color.adjust(settings.$color-dark, $lightness: 10%);
+      border: 1px solid color.adjust(settings.$color-dark, $lightness: 20%);
+      color: settings.$color-light;
 
       &::placeholder {
-        color: lighten($color-dark, 40%);
+        color: color.adjust(settings.$color-dark, $lightness: 40%);
       }
 
       &:focus {
         outline: none;
-        border-color: $color-main;
+        border-color: settings.$color-main;
       }
     }
 
     button {
       width: 100%;
-      background: $color-main;
-      color: $color-light;
+      background: settings.$color-main;
+      color: settings.$color-light;
       border: none;
-      padding: $base-size;
+      padding: settings.$base-size;
       cursor: pointer;
-      transition: $transition;
+      transition: settings.$transition;
 
       &:hover {
-        background: lighten($color-main, 10%);
+        background: color.adjust(settings.$color-main, $lightness: 10%);
       }
     }
   }

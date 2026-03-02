@@ -40,29 +40,46 @@ class Booking extends BaseWidget {
     initWidgets() {
         const thisBooking = this;
 
-        // Initialize widgets
-        thisBooking.peopleAmountWidget = new AmountWidget(thisBooking.dom.peopleAmount);
-        thisBooking.hoursAmountWidget = new AmountWidget(thisBooking.dom.hoursAmount);
-        thisBooking.datePicker = new DatePicker(thisBooking.dom.datePickerWrapper);
-        thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPickerWrapper);
+        // Initialize widgets with null checks
+        if (thisBooking.dom.peopleAmount) {
+            thisBooking.peopleAmountWidget = new AmountWidget(thisBooking.dom.peopleAmount);
+        }
+
+        if (thisBooking.dom.hoursAmount) {
+            thisBooking.hoursAmountWidget = new AmountWidget(thisBooking.dom.hoursAmount);
+        }
+
+        if (thisBooking.dom.datePickerWrapper) {
+            thisBooking.datePicker = new DatePicker(thisBooking.dom.datePickerWrapper);
+        }
+
+        if (thisBooking.dom.hourPickerWrapper) {
+            thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPickerWrapper);
+        }
+
+        // Only add event listeners if widgets initialized
+        if (thisBooking.datePicker && thisBooking.datePicker.dom.input) {
+            thisBooking.datePicker.dom.input.addEventListener('change', function () {
+                thisBooking.updateDOM();
+            });
+        }
+
+        if (thisBooking.hourPicker && thisBooking.hourPicker.dom.input) {
+            thisBooking.hourPicker.dom.input.addEventListener('input', function () {
+                thisBooking.updateDOM();
+            });
+        }
 
         // Initialize table selection
         thisBooking.initTables();
 
-        // Add event listeners for date and hour changes
-        thisBooking.datePicker.dom.input.addEventListener('change', function () {
-            thisBooking.updateDOM();
-        });
-
-        thisBooking.hourPicker.dom.input.addEventListener('input', function () {
-            thisBooking.updateDOM();
-        });
-
         // Add submit button event listener
-        thisBooking.dom.submitButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            thisBooking.sendBooking();
-        });
+        if (thisBooking.dom.submitButton) {
+            thisBooking.dom.submitButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                thisBooking.sendBooking();
+            });
+        }
 
         // Listen for updated events from widgets
         thisBooking.dom.wrapper.addEventListener('updated', function () {
@@ -99,39 +116,43 @@ class Booking extends BaseWidget {
         });
     }
 
-    getData() {
+    // FIXED: async method properly defined
+    async getData() {
         const thisBooking = this;
 
-        const startDateParam = settings.db.dateStartParamKey + '=' + utils.dateToStr(thisBooking.datePicker.minDate);
-        const endDateParam = settings.db.dateEndParamKey + '=' + utils.dateToStr(thisBooking.datePicker.maxDate);
+        try {
+            const minDateStr = utils.dateToStr(thisBooking.datePicker.minDate);
+            const maxDateStr = utils.dateToStr(thisBooking.datePicker.maxDate);
 
-        const params = {
-            booking: [startDateParam, endDateParam],
-            eventsCurrent: [settings.db.notRepeatParam, startDateParam, endDateParam],
-            eventsRepeat: [settings.db.repeatParam, endDateParam],
-        };
+            // Fetch bookings
+            const { data: bookings, error: bookingsError } = await window.supabase
+                .from('bookings')
+                .select('*')
+                .gte('date', minDateStr)
+                .lte('date', maxDateStr);
 
-        const urls = {
-            booking: settings.db.url + '/' + settings.db.bookings + '?' + params.booking.join('&'),
-            eventsCurrent: settings.db.url + '/' + settings.db.events + '?' + params.eventsCurrent.join('&'),
-            eventsRepeat: settings.db.url + '/' + settings.db.events + '?' + params.eventsRepeat.join('&'),
-        };
+            if (bookingsError) throw bookingsError;
 
-        Promise.all([
-            fetch(urls.booking),
-            fetch(urls.eventsCurrent),
-            fetch(urls.eventsRepeat),
-        ])
-            .then(function (allResponses) {
-                return Promise.all([
-                    allResponses[0].json(),
-                    allResponses[1].json(),
-                    allResponses[2].json(),
-                ]);
-            })
-            .then(function ([bookings, eventsCurrent, eventsRepeat]) {
-                thisBooking.parseData(bookings, eventsCurrent, eventsRepeat);
-            });
+            // Fetch all events
+            const { data: events, error: eventsError } = await window.supabase
+                .from('events')
+                .select('*');
+
+            if (eventsError) throw eventsError;
+
+            // Separate events
+            const eventsCurrent = events.filter(e =>
+                e.date && e.date >= minDateStr && e.date <= maxDateStr && !e.repeat
+            );
+
+            const eventsRepeat = events.filter(e =>
+                e.repeat && e.repeat === 'daily'
+            );
+
+            thisBooking.parseData(bookings || [], eventsCurrent, eventsRepeat);
+        } catch (error) {
+            console.error('Error fetching booking data:', error);
+        }
     }
 
     parseData(bookings, eventsCurrent, eventsRepeat) {
@@ -139,21 +160,27 @@ class Booking extends BaseWidget {
 
         thisBooking.booked = {};
 
+        // Use table_number instead of table
         for (let item of bookings) {
-            thisBooking.makeBooked(item.date, item.hour, item.duration, item.table);
+            thisBooking.makeBooked(item.date, item.hour, item.duration, item.table_number);
         }
 
         for (let item of eventsCurrent) {
-            thisBooking.makeBooked(item.date, item.hour, item.duration, item.table);
+            thisBooking.makeBooked(item.date, item.hour, item.duration, item.table_number);
         }
 
         const minDate = thisBooking.datePicker.minDate;
         const maxDate = thisBooking.datePicker.maxDate;
 
         for (let item of eventsRepeat) {
-            if (item.repeat == 'daily') {
-                for (let loopDate = minDate; loopDate <= maxDate; loopDate = utils.addDays(loopDate, 1)) {
-                    thisBooking.makeBooked(utils.dateToStr(loopDate), item.hour, item.duration, item.table);
+            if (item.repeat === 'daily') {
+                for (let loopDate = new Date(minDate); loopDate <= maxDate; loopDate = utils.addDays(loopDate, 1)) {
+                    thisBooking.makeBooked(
+                        utils.dateToStr(loopDate),
+                        item.hour,
+                        item.duration,
+                        item.table_number
+                    );
                 }
             }
         }
@@ -224,7 +251,8 @@ class Booking extends BaseWidget {
         return starters;
     }
 
-    sendBooking() {
+    // FIXED: async method properly defined
+    async sendBooking() {
         const thisBooking = this;
 
         // Validate form
@@ -246,7 +274,7 @@ class Booking extends BaseWidget {
         const bookingData = {
             date: thisBooking.datePicker.value,
             hour: thisBooking.hourPicker.value,
-            table: parseInt(thisBooking.selectedTable.getAttribute('data-table')),
+            table_number: parseInt(thisBooking.selectedTable.getAttribute('data-table')),
             duration: thisBooking.hoursAmountWidget.value,
             ppl: thisBooking.peopleAmountWidget.value,
             starters: thisBooking.getStarters(),
@@ -254,33 +282,32 @@ class Booking extends BaseWidget {
             address: thisBooking.dom.address.value,
         };
 
-        const url = settings.db.url + '/' + settings.db.bookings;
+        try {
+            const { data, error } = await window.supabase
+                .from('bookings')
+                .insert([bookingData])
+                .select();
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(bookingData),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Booking successful:', data);
-                thisBooking.makeBooked(data.date, data.hour, data.duration, data.table);
-                thisBooking.updateDOM();
-                alert('Your booking was successful!');
+            if (error) throw error;
 
-                // Clear form
-                thisBooking.dom.phone.value = '';
-                thisBooking.dom.address.value = '';
-                for (let checkbox of thisBooking.dom.starters) {
-                    checkbox.checked = false;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Booking failed. Please try again later.');
-            });
+            console.log('Booking successful:', data);
+            thisBooking.makeBooked(
+                data[0].date,
+                data[0].hour,
+                data[0].duration,
+                data[0].table_number
+            );
+            thisBooking.updateDOM();
+            alert('Your booking was successful!');
+
+            // Clear form
+            thisBooking.dom.phone.value = '';
+            thisBooking.dom.address.value = '';
+            thisBooking.dom.starters.forEach(cb => cb.checked = false);
+        } catch (error) {
+            console.error('Error saving booking:', error);
+            alert('Booking failed. Please try again later.');
+        }
     }
 }
 

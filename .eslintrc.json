@@ -1,22 +1,26 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "node": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 2015,
+        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "rules": {
-        "linebreak-style": [
-            "off"
-        ],
-        "no-console": [
-            "off"
-        ]
+        "linebreak-style": "off",
+        "no-console": "off",
+        "no-unused-vars": ["warn", { 
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
+        }]
     },
     "globals": {
-    "Handlebars": false
+        "Handlebars": "readonly",
+        "flatpickr": "readonly",
+        "Flickity": "readonly",
+        "rangeSlider": "readonly"
     }
 }

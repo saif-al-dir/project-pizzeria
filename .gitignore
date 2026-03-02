@@ -1,1 +1,13 @@
-node_modules
+# .gitignore
+node_modules/
+dist/
+.env
+src/js/config.js
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store

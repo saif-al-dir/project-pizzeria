@@ -34,13 +34,16 @@ class Cart {
         thisCart.dom.toggleTrigger.addEventListener('click', function () {
             thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive); // Toggle the active class
         });
+
         thisCart.dom.productList.addEventListener('updated', function () {
             thisCart.update();
         });
+
         // Add event listener for the remove event
         thisCart.dom.productList.addEventListener('remove', function (event) {
             thisCart.remove(event.detail.cartProduct); // Call the remove method with the cart product
         });
+
         thisCart.dom.form.addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent default form submission
             thisCart.sendOrder(); // Call sendOrder method
@@ -60,10 +63,10 @@ class Cart {
         thisCart.update(); // Update the cart totals to reflect the cleared cart
     }
 
-    sendOrder() {
+    // FIXED: Moved async method inside class properly
+    async sendOrder() {
         const thisCart = this;
 
-        const url = settings.db.url + '/' + settings.db.orders; // Endpoint for orders
         const phone = thisCart.dom.wrapper.querySelector(select.cart.phone).value;
         const address = thisCart.dom.wrapper.querySelector(select.cart.address).value;
 
@@ -81,43 +84,44 @@ class Cart {
             return;
         }
 
-        // Prepare the payload
-        const payload = {
-            address: thisCart.dom.wrapper.querySelector(select.cart.address).value,
-            phone: thisCart.dom.wrapper.querySelector(select.cart.phone).value,
-            totalPrice: thisCart.totalPrice,
-            subtotalPrice: thisCart.totalPrice - settings.cart.defaultDeliveryFee,
-            totalNumber: thisCart.totalNumber,
-            deliveryFee: settings.cart.defaultDeliveryFee,
-            toTal: thisCart.toTal,
-            products: [] // This will be filled later
-        };
+        // Calculate values
+        let totalNumber = 0;
+        let subtotalPrice = 0;
 
-        // Fill the products array
-        for (let prod of thisCart.products) {
-            payload.products.push(prod.getData());
+        for (let product of thisCart.products) {
+            totalNumber += product.amount;
+            subtotalPrice += product.price;
         }
 
-        console.log('payload', payload); // Log the payload for debugging
+        const deliveryFee = settings.cart.defaultDeliveryFee;
+        const totalPrice = subtotalPrice + (totalNumber > 0 ? deliveryFee : 0);
 
-        // Send the order to the server
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
+        const orderData = {
+            phone,
+            address,
+            total_price: totalPrice,
+            subtotal_price: subtotalPrice,
+            delivery_fee: deliveryFee,
+            total_number: totalNumber,
+            products: thisCart.products.map(p => p.getData())
         };
 
-        fetch(url, options)
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (parsedResponse) {
-                console.log('parsedResponse', parsedResponse); // Log the response from the server
-                thisCart.clearCart(); // Clear the cart after successful order
-            });
-        console.log(this.sendOrder);
+        console.log('Sending order data:', orderData); // Add this for debugging
+
+        try {
+            const { data, error } = await window.supabase
+                .from('orders')
+                .insert([orderData]);
+
+            if (error) throw error;
+
+            console.log('Order successful:', data);
+            thisCart.clearCart();
+            alert('Your order has been placed successfully!');
+        } catch (error) {
+            console.error('Error saving order:', error);
+            alert('Order failed. Please try again.');
+        }
     }
 
     add(menuProduct) {
@@ -147,6 +151,9 @@ class Cart {
             subtotalPrice += product.price;
         }
 
+        // Store these values in the instance
+        thisCart.totalNumber = totalNumber;
+        thisCart.subtotalPrice = subtotalPrice;
         thisCart.totalPrice = subtotalPrice + (totalNumber > 0 ? deliveryFee : 0);
 
         // Update the HTML
@@ -156,15 +163,10 @@ class Cart {
         thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
         thisCart.dom.toTal.innerHTML = thisCart.dom.totalPrice.innerHTML;
 
-        // Add visual effect to the cart or product list
-        thisCart.dom.wrapper.classList.add('fade-effect'); // If you want to apply to the entire cart
-        // or
-        thisCart.dom.productList.classList.add('fade-effect'); // If you want to apply to the product list
-
+        // Add visual effect
+        thisCart.dom.wrapper.classList.add('fade-effect');
         setTimeout(() => {
-            thisCart.dom.wrapper.classList.remove('fade-effect'); // Remove after 1 second
-            // or
-            thisCart.dom.productList.classList.remove('fade-effect'); // Remove after 1 second
+            thisCart.dom.wrapper.classList.remove('fade-effect');
         }, 1000);
     }
 
