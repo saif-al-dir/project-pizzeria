@@ -1,70 +1,91 @@
 @use "sass:color";
-@use "settings";
+@use "settings" as *;
+@use "sass:math";
 
 .cart {
   position: absolute;
   width: 300px;
   right: 0;
-  top: settings.$base-size;
-  padding: (settings.$base-size) (settings.$base-size * 1.5);
-  background: settings.$color-light;
-  border-radius: settings.$radius;
-  color: settings.$color-main;
-  font-size: settings.$base-size;
-  box-shadow: 0 0 settings.$base-size rgba(0, 0, 0, 0.2);
+  top: $base-size;
+  padding: ($base-size) ($base-size * 1.5);
+  background: $color-light;
+  border-radius: $radius;
+  color: $color-main;
+  font-size: $base-size;
+  box-shadow: 0 0 $base-size rgba(0, 0, 0, 0.2);
   z-index: 9999;
 
   &.active {
     .cart__content {
-      @include settings.accordion-open();
-      padding: (settings.$base-size * 1.5) 0 0 0;
+      @include accordion-open();
+      padding: ($base-size * 1.5) 0 0 0;
     }
   }
 
   &__summary {
-    @include settings.flex(row, center, space-between);
+    @include flex(row, center, space-between);
     text-transform: uppercase;
     cursor: pointer;
   }
 
   &__icon {
-    font-size: (settings.$base-size * 2);
+    font-size: ($base-size * 2);
   }
 
   &__total-number {
-    background: settings.$color-main;
+    background: $color-main;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    color: settings.$color-light;
+    color: $color-light;
     text-align: center;
     line-height: 28px;
+    transition: all 0.3s ease;
+    
+    &.updated {
+      animation: pulse 0.5s ease;
+    }
   }
 
   &__total-price {
-    color: settings.$color-dark;
+    color: $color-dark;
+    
+    strong {
+      transition: all 0.3s ease;
+      
+      &.updated {
+        animation: pulse 0.5s ease;
+      }
+    }
   }
 
   &__content {
-    @include settings.accordion-closed();
+    @include accordion-closed();
     opacity: 0;
     animation: flipdown 0.5s ease both;
-    color: settings.$color-dark;
+    color: $color-dark;
   }
 
   &__order-summary {
     li {
-      @include settings.flex(row, center, space-between);
+      @include flex(row, center, space-between);
+      animation: slideIn 0.3s ease;
+      transition: all 0.3s ease;
+      
+      &.removing {
+        opacity: 0;
+        transform: translateX(100px);
+      }
     }
 
     .widget-amount {
-      @include settings.flex(column-reverse, center, space-between);
-      margin: 0 settings.$base-size 0 0;
+      @include flex(column-reverse, center, space-between);
+      margin: 0 $base-size 0 0;
 
       input {
         margin: 0;
-        width: (settings.$base-size * 2);
-        height: (settings.$base-size * 2);
+        width: ($base-size * 2);
+        height: ($base-size * 2);
       }
 
       &:hover .btn-quantity--lt {
@@ -78,15 +99,15 @@
   }
 
   &__product-header {
-    @include settings.flex(row, center, space-between);
+    @include flex(row, center, space-between);
   }
 
   &__product-details {
     li {
       display: block;
-      margin: 0 0 (settings.$base-size, 4);
+      margin: 0 0 math.div($base-size, 2) 0;
       font-size: 10px;
-      color: color.adjust(settings.$color-dark, $lightness: 40%);
+      color: color.adjust($color-dark, $lightness: 40%);
       text-transform: lowercase;
       font-style: italic;
       line-height: 1.3;
@@ -96,7 +117,7 @@
 
   &__product-details-label {
     position: relative;
-    padding: 0 (settings.$base-size, 2) 0 0;
+    padding: 0 math.div($base-size, 2) 0 0;
     font-weight: 700;
 
     &::after {
@@ -106,7 +127,7 @@
   }
 
   &__action-buttons {
-    @include settings.flex(row, center, space-between);
+    @include flex(row, center, space-between);
     font-size: 0;
 
     i {
@@ -114,36 +135,78 @@
     }
 
     li {
-      margin: 0 0 0 settings.$base-size;
+      margin: 0 0 0 $base-size;
     }
 
     a {
-      color: settings.$color-main;
+      color: $color-main;
 
       &:hover {
-        color: color.adjust(settings.$color-main, $lightness: 3%);
+        color: color.adjust($color-main, $lightness: 3%);
       }
     }
   }
 
   &__order-price {
-    margin: settings.$base-size 0 0 0;
-    padding: settings.$base-size 0;
+    margin: $base-size 0 0 0;
+    padding: $base-size 0;
     list-style-type: none;
-    border-top: 1px solid color.adjust(settings.$color-dark, $lightness: 70%);
+    border-top: 1px solid color.adjust($color-dark, $lightness: 70%);
 
     li {
-      @include settings.flex(row, center, space-between);
+      @include flex(row, center, space-between);
     }
   }
 
   &__order-confirmation {
-    border-top: 1px solid color.adjust(settings.$color-dark, $lightness: 70%);
-    padding: settings.$base-size 0 0 0;
+    border-top: 1px solid color.adjust($color-dark, $lightness: 70%);
+    padding: $base-size 0 0 0;
 
     input, button {
       width: 100%;
-      margin-bottom: (settings.$base-size, 2);
+      margin-bottom: math.div($base-size, 2);
     }
   }
+}
+
+// Cart icon bounce
+.cart__icon {
+  &.bounce {
+    animation: bounce 0.5s ease;
+  }
+}
+
+// Fade effect for cart
+.fade-effect {
+  animation: fade 0.5s ease;
+}
+
+// Keyframe Animations
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); color: $color-main; }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(0.9); }
+  75% { transform: scale(1.1); }
+}
+
+@keyframes fade {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
 }

@@ -2,6 +2,11 @@
 
 import { supabaseConfig } from './config.js';
 
+// Import Toast
+import './components/Toast.js';
+
+// Rest of your app.js code...
+
 const { createClient } = supabase;
 
 const supabaseUrl = supabaseConfig.url;

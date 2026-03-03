@@ -202,6 +202,15 @@ class Product {
 
         // Add event listener for amount widget update
         thisProduct.amountWidgetElem.addEventListener('updated', function () {
+
+            // Animate price update
+            const priceElem = thisProduct.priceElem;
+            priceElem.classList.add('updated');
+            
+            setTimeout(() => {
+                priceElem.classList.remove('updated');
+            }, 500);
+
             thisProduct.processOrder(); // Call processOrder to update the price
         });
     }
@@ -209,6 +218,14 @@ class Product {
     addToCart() {
         const thisProduct = this;
         // app.cart.add(thisProduct.prepareCartProduct()); // Pass the prepared product summary to the cart
+
+        // Animate the add button
+        const addButton = thisProduct.element.querySelector('.btn-primary');
+        addButton.classList.add('added');
+        
+        setTimeout(() => {
+            addButton.classList.remove('added');
+        }, 500);
 
         const productSummary = thisProduct.prepareCartProduct();
         const event = new CustomEvent('add-to-cart', {

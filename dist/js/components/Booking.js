@@ -255,19 +255,25 @@ class Booking extends BaseWidget {
     async sendBooking() {
         const thisBooking = this;
 
+        // Show loading state
+        thisBooking.dom.submitButton.classList.add('loading');
+
         // Validate form
         if (!thisBooking.selectedTable) {
-            alert('Please select a table');
+            thisBooking.dom.submitButton.classList.remove('loading');
+            window.toast?.error('Please select a table');
             return;
         }
 
         if (!thisBooking.dom.phone.value || thisBooking.dom.phone.value.length < 10) {
-            alert('Please enter a valid phone number');
+            thisBooking.dom.submitButton.classList.remove('loading');
+            window.toast?.error('Please enter a valid phone number');
             return;
         }
 
         if (!thisBooking.dom.address.value || thisBooking.dom.address.value.length < 5) {
-            alert('Please enter a valid address');
+            thisBooking.dom.submitButton.classList.remove('loading');
+            window.toast?.error('Please enter a valid address');
             return;
         }
 
@@ -291,22 +297,143 @@ class Booking extends BaseWidget {
             if (error) throw error;
 
             console.log('Booking successful:', data);
+
             thisBooking.makeBooked(
                 data[0].date,
                 data[0].hour,
                 data[0].duration,
                 data[0].table_number
             );
-            thisBooking.updateDOM();
-            alert('Your booking was successful!');
 
+        // Update DOM to show table as booked
+            thisBooking.updateDOM();
+            
+            // Show success effects
+            thisBooking.showSuccessEffects(bookingData);
+            
             // Clear form
-            thisBooking.dom.phone.value = '';
-            thisBooking.dom.address.value = '';
-            thisBooking.dom.starters.forEach(cb => cb.checked = false);
+            thisBooking.clearForm();
+            
         } catch (error) {
             console.error('Error saving booking:', error);
-            alert('Booking failed. Please try again later.');
+            window.toast?.error('Booking failed. Please try again.');
+        } finally {
+            thisBooking.dom.submitButton.classList.remove('loading');
+        }
+    }
+
+    // NEW: Success effects method
+    showSuccessEffects(bookingData) {
+        const thisBooking = this;
+        
+        // 1. Create confetti
+        thisBooking.createConfetti();
+        
+        // 2. Flash the selected table
+        if (thisBooking.selectedTable) {
+            thisBooking.selectedTable.classList.add('selected');
+            setTimeout(() => {
+                thisBooking.selectedTable.classList.remove('selected');
+            }, 1000);
+        }
+        
+        // 3. Show success modal
+        thisBooking.showSuccessModal(bookingData);
+        
+        // 4. Highlight success fields
+        thisBooking.dom.phone.classList.add('success');
+        thisBooking.dom.address.classList.add('success');
+        
+        setTimeout(() => {
+            thisBooking.dom.phone.classList.remove('success');
+            thisBooking.dom.address.classList.remove('success');
+        }, 2000);
+        
+        // 5. Show toast notification
+        if (window.toast) {
+            window.toast.success('Table booked successfully!');
+        }
+    }
+
+    // NEW: Create confetti effect
+    createConfetti() {
+        const container = document.querySelector('.booking-widget');
+        
+        for (let i = 0; i < 30; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            container.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                confetti.remove();
+            }, 1000);
+        }
+    }
+
+    // NEW: Show success modal
+    showSuccessModal(bookingData) {
+        // Create modal container
+        const modal = document.createElement('div');
+        modal.className = 'booking-success-overlay';
+        
+        // Format date and time
+        const date = new Date(bookingData.date);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Create modal content
+        modal.innerHTML = `
+            <div class="booking-success-modal">
+                <i class="fas fa-check-circle"></i>
+                <h3>Booking Confirmed!</h3>
+                <p>Your table has been successfully booked.</p>
+                <div class="booking-details">
+                    <p><strong>Date:</strong> ${formattedDate}</p>
+                    <p><strong>Time:</strong> ${bookingData.hour}</p>
+                    <p><strong>Table:</strong> ${bookingData.table_number}</p>
+                    <p><strong>People:</strong> ${bookingData.ppl}</p>
+                    <p><strong>Duration:</strong> ${bookingData.duration} hours</p>
+                </div>
+                <button class="btn-secondary" onclick="this.closest('.booking-success-overlay').remove()">
+                    Great!
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.remove();
+            }
+        }, 5000);
+    }
+
+    // NEW: Clear form method
+    clearForm() {
+        const thisBooking = this;
+        
+        // Clear phone and address
+        thisBooking.dom.phone.value = '';
+        thisBooking.dom.address.value = '';
+        
+        // Uncheck starters
+        thisBooking.dom.starters.forEach(cb => cb.checked = false);
+        
+        // Reset people and hours to 1
+        thisBooking.peopleAmountWidget.value = 1;
+        thisBooking.hoursAmountWidget.value = 1;
+        
+        // Deselect table
+        if (thisBooking.selectedTable) {
+            thisBooking.selectedTable.classList.remove('selected');
+            thisBooking.selectedTable = null;
         }
     }
 }

@@ -1,3 +1,7 @@
+@use "sass:math";
+@use "sass:color";
+
+@use 'partials/toast';
 @use 'partials/settings';
 @use 'partials/typography';
 @use 'partials/global';
@@ -6,5 +10,6 @@
 @use 'partials/cart';
 @use 'partials/product';
 @use 'partials/booking';
+@use 'partials/booking-effects';
 @use 'partials/home';
 @use 'partials/footer';

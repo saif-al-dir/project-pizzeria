@@ -1,0 +1,55 @@
+@use '../variables';
+
+.toast-container {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: white;
+    color: variables.$color-dark;
+    padding: 12px 20px;
+    border-radius: variables.$radius;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    min-width: 300px;
+    border-left: 4px solid;
+    
+    &.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    i {
+        font-size: 20px;
+    }
+    
+    &--success {
+        border-left-color: variables.$color-success;
+        i { color: variables.$color-success; }
+    }
+    
+    &--error {
+        border-left-color: variables.$color-danger;
+        i { color: variables.$color-danger; }
+    }
+    
+    &--info {
+        border-left-color: variables.$color-main;
+        i { color: variables.$color-main; }
+    }
+}

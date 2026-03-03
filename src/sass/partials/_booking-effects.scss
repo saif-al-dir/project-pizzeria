@@ -1,0 +1,178 @@
+@use "sass:color";
+@use "settings" as *;
+
+// Booking success effects
+.booking-widget {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+// Success overlay
+.booking-success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.booking-success-modal {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.4s ease;
+    
+    i {
+        font-size: 60px;
+        color: $color-success;
+        margin-bottom: 20px;
+        animation: checkmark 0.5s ease;
+    }
+    
+    h3 {
+        color: $color-dark;
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+    
+    p {
+        color: lighten($color-dark, 20%);
+        margin-bottom: 20px;
+    }
+    
+    .booking-details {
+        background: lighten($color-dark, 75%);
+        padding: 15px;
+        border-radius: $radius;
+        margin: 20px 0;
+        text-align: left;
+        
+        p {
+            margin: 5px 0;
+            color: $color-dark;
+            
+            strong {
+                color: $color-main;
+                width: 80px;
+                display: inline-block;
+            }
+        }
+    }
+    
+    .btn-secondary {
+        min-width: 200px;
+    }
+}
+
+// Table selection success flash
+.table.selected {
+    animation: tablePulse 0.5s ease;
+    
+    &::before {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $color-success;
+        font-size: 30px;
+        font-weight: bold;
+        z-index: 10;
+        animation: checkAppear 0.3s ease;
+    }
+}
+
+// Form field success highlight
+.booking-form input.success {
+    border-color: $color-success;
+    background: rgba($color-success, 0.05);
+    transition: all 0.3s ease;
+}
+
+// Animations
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes tablePulse {
+    0% { box-shadow: 0 0 0 0 rgba($color-success, 0.7); }
+    50% { box-shadow: 0 0 0 20px rgba($color-success, 0); }
+    100% { box-shadow: 0 0 0 0 rgba($color-success, 0); }
+}
+
+@keyframes checkAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+// Confetti effect (simple version)
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: $color-main;
+    opacity: 0;
+    animation: confetti 1s ease forwards;
+    
+    @for $i from 1 through 30 {
+        &:nth-child(#{$i}) {
+            left: random(100) * 1%;
+            top: -10px;
+            background: rgb(random(255), random(255), random(255));
+            animation-delay: random(5) * 0.1s;
+            transform: rotate(random(360) + deg);
+        }
+    }
+}
+
+@keyframes confetti {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+    }
+}

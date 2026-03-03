@@ -1,61 +1,74 @@
 @use "sass:color";
-@use "settings";
+@use "settings" as *;
 
 .product-list {
-  padding: (settings.$base-size * 3) 0;
+  padding: ($base-size * 3) 0;
 }
 
 .product {
-  margin: () 0;
-  padding: (settings.$base-size * 6) (settings.$base-size * 4);
-  background: settings.$color-light;
-  border-bottom: 1px solid color.adjust(settings.$color-dark, $lightness: 70%);
-  border-radius: settings.$radius;
+  margin: ($base-size * 2) 0;
+  padding: ($base-size * 6) ($base-size * 4);
+  background: $color-light;
+  border-bottom: 1px solid color.adjust($color-dark, $lightness: 70%);
+  border-radius: $radius;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 
   &__header {
-    @include settings.flex(row, center, space-between);
-    margin-bottom: (settings.$base-size * 2);
+    @include flex(row, center, space-between);
+    margin-bottom: ($base-size * 2);
     cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba($color-main, 0.05);
+      border-radius: $radius;
+      padding: 0 8px;
+    }
   }
 
   &__name {
-    @extend %h1-styles !optional;
+    @extend .h1 !optional;
     position: relative;
   }
 
   &__icon {
     position: absolute;
-    color: settings.$color-main;
-    right: (-(settings.$base-size) * 5);
-    top: settings.$base-size;
-    font-size: (settings.$base-size * 1.5);
-    transition: settings.$transition;
+    color: $color-main;
+    right: (-$base-size * 5);
+    top: $base-size;
+    font-size: ($base-size * 1.5);
+    transition: $transition;
   }
 
   &__base-price {
-    @extend %h1-styles !optional;
-    font-weight: settings.$font-light;
+    @extend .h1 !optional;
+    font-weight: $font-light;
   }
 
   &__description {
-    color: color.adjust(settings.$color-dark, $lightness: 10%);
+    color: color.adjust($color-dark, $lightness: 10%);
   }
 
   &__wrapper {
-    @include settings.flex(row, center, space-between);
-    @include settings.accordion-closed();
+    @include flex(row, center, space-between);
+    @include accordion-closed();
     animation: flipdown 0.5s ease both;
   }
 
   &__params {
-    margin: 0 0 (settings.$base-size * 3) 0;
+    margin: 0 0 ($base-size * 3) 0;
     padding: 0;
     list-style-type: none;
   }
 
   &__params-title {
-    @extend %h2-styles !optional;
-    margin: (settings.$base-size * 2) 0;
+    @extend .h2 !optional;
+    margin: ($base-size * 2) 0;
   }
 
   &__order {
@@ -66,8 +79,16 @@
 
   &__total-price {
     font-size: 14px;
-    font-weight: settings.$font-bold;
+    font-weight: $font-bold;
     text-transform: uppercase;
+    
+    .price {
+      transition: all 0.3s ease;
+      
+      &.updated {
+        animation: pulse 0.5s ease;
+      }
+    }
   }
 
   &__images {
@@ -83,7 +104,7 @@
     }
 
     > img {
-      @include settings.center();
+      @include center();
       height: auto;
       opacity: 0;
       transition: opacity 500ms;
@@ -94,9 +115,25 @@
     }
   }
 
+  &__add-to-cart {
+    position: relative;
+    
+    &.added {
+      animation: addedToCart 0.5s ease;
+      
+      &::before {
+        content: '✓';
+        position: absolute;
+        left: -20px;
+        color: $color-success;
+        font-weight: bold;
+      }
+    }
+  }
+
   &.active {
     .product__wrapper {
-      @include settings.accordion-open();
+      @include accordion-open();
     }
 
     .product__order,
@@ -108,4 +145,10 @@
       transform: rotate(180deg);
     }
   }
+}
+
+@keyframes addedToCart {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
