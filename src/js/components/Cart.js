@@ -196,7 +196,7 @@ class Cart {
         };
 
         try {
-            const { data, error } = await window.supabase
+            const { data: _, error } = await window.supabase
                 .from('orders')
                 .insert([orderData]);
             

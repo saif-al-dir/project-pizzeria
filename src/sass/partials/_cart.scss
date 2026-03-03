@@ -30,6 +30,9 @@
 
   &__icon {
     font-size: ($base-size * 2);
+    &.bounce {
+      animation: bounce 0.5s ease;
+    }
   }
 
   &__total-number {
@@ -41,7 +44,7 @@
     text-align: center;
     line-height: 28px;
     transition: all 0.3s ease;
-    
+
     &.updated {
       animation: pulse 0.5s ease;
     }
@@ -49,10 +52,10 @@
 
   &__total-price {
     color: $color-dark;
-    
+
     strong {
       transition: all 0.3s ease;
-      
+
       &.updated {
         animation: pulse 0.5s ease;
       }
@@ -71,7 +74,7 @@
       @include flex(row, center, space-between);
       animation: slideIn 0.3s ease;
       transition: all 0.3s ease;
-      
+
       &.removing {
         opacity: 0;
         transform: translateX(100px);
@@ -122,7 +125,7 @@
 
     &::after {
       position: absolute;
-      content: ':';
+      content: ":";
     }
   }
 
@@ -162,7 +165,8 @@
     border-top: 1px solid color.adjust($color-dark, $lightness: 70%);
     padding: $base-size 0 0 0;
 
-    input, button {
+    input,
+    button {
       width: 100%;
       margin-bottom: math.div($base-size, 2);
     }
@@ -170,11 +174,11 @@
 }
 
 // Cart icon bounce
-.cart__icon {
-  &.bounce {
-    animation: bounce 0.5s ease;
-  }
-}
+// .cart__icon {
+//   &.bounce {
+//     animation: bounce 0.5s ease;
+//   }
+// }
 
 // Fade effect for cart
 .fade-effect {
@@ -194,19 +198,39 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); color: $color-main; }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    color: $color-main;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes bounce {
-  0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.2); }
-  50% { transform: scale(0.9); }
-  75% { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  75% {
+    transform: scale(1.1);
+  }
 }
 
 @keyframes fade {
-  0% { opacity: 0.3; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
 }
